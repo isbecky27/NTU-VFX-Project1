@@ -8,4 +8,4 @@
 
 
 #### Reference
-* [HDR Imaging - OpenCV Docs](https://vovkos.github.io/doxyrest-showcase/opencv/sphinx_rtd_theme/group_photo_hdr.html)
+* [HDR Imaging - OpenCV 4.5.3 Docs](https://docs.opencv.org/4.5.3/d6/df5/group__photo__hdr.html)
