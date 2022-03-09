@@ -4,16 +4,34 @@ import argparse
 import cv2
 import os
 
-def global_operator():
+def global_operator(Lw, delta = 0.000001, a = 0.5, Lwhite = 200):
+    '''
+    Lw_bar = exp(1/N * Σlog(δ + Lw))
+    Lm(x, y) = (a / Lw_bar) * Lw(x, y)  
+    Ld(x, y) = [Lm(x, y) * (1 + Lm(x, y) / (Lwhite(x, y) ** 2))] / (1 + Lm(x, y)) 
+    '''
+    
+    Lw_bar = np.exp(np.mean(np.log(delta + Lw)))
+    Lm = (a / Lw_bar) * Lw
+    Ld = (Lm * (1 + Lm / (Lwhite ** 2))) / (1 + Lm) 
+
+    img = np.clip(np.array(Ld * 255), 0, 255).astype('uint8')
+
+    return img
+
+def local_operator(hdr):
     '''
     TODO
     '''
 
-    
-def local_operator():
-    '''
-    TODO
-    '''
+def gamma_correction(img, r):
+	'''
+		r > 1 : reduce brightness
+		r < 1 : enhance brightness
+	'''
+	img = (img.clip(min = 0) / 255) ** r * 255
+
+	return img
 
 def tone_mapping_using_package(hdr, method = '', save_path = ''):
     
@@ -56,14 +74,12 @@ def tone_mapping_using_package(hdr, method = '', save_path = ''):
         ldr = cv2.createTonemap(3.5).process(hdr) * 255 * 3
         cv2.imwrite(save_path + "tonemapping_Tonemap.png", ldr)
 
-
-
 if __name__ == '__main__':
 
     ## add argument
     parser = argparse.ArgumentParser()
     parser.add_argument('--data_path', type = str, default = './data/', help = 'Path to the directory that contains series of images.')
-    parser.add_argument('--series_of_images', type = str, default = 'memorial', help = 'The folder of a series of images that contains images and shutter time file.')
+    parser.add_argument('--series_of_images', type = str, default = 'desk', help = 'The folder of a series of images that contains images and shutter time file.')
     parser.add_argument('--shutter_time_filename', type = str, default = 'shutter_times.txt', help = 'The name of the file where shutter time information is stored.')
     args = parser.parse_args()
 
@@ -80,8 +96,14 @@ if __name__ == '__main__':
     merge_debevec = cv2.createMergeDebevec()
     hdr = merge_debevec.process(imgs, times, response)
 
-    tone_mapping_using_package(hdr, 'Drago')
+    ## tone mapping
+    # tone_mapping_using_package(hdr, 'Drago')
     # tone_mapping_using_package(hdr, 'Mantiuk')
     # tone_mapping_using_package(hdr, 'Reinhard')
     # tone_mapping_using_package(hdr)
+
+    ldr = global_operator(hdr)
+    cv2.imwrite('global.png', ldr)
+    cv2.imshow('Tone Mapping', ldr)
+    cv2.waitKey(0)
     
