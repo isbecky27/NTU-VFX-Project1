@@ -1,0 +1,13 @@
+desk01.JPG 1/2000
+desk02.JPG 1/1000
+desk03.JPG 1/500
+desk04.JPG 1/250
+desk05.JPG 1/125
+desk06.JPG 1/60
+desk07.JPG 1/30
+desk08.JPG 1/15
+desk09.JPG 1/8
+desk10.JPG 1/4
+desk11.JPG 1/2
+desk12.JPG 1
+desk13.JPG 2
