@@ -160,6 +160,15 @@ def construct_radiance_map(imgs, g_BGR, B):
 
 	return lnE_BGR
 
+def gamma_correction(img, r):
+	'''
+		r > 1 : reduce brightness
+		r < 1 : enhance brightness
+	'''
+	img = (img.clip(min = 0) / 255) ** r * 255
+
+	return img
+
 #-------- Need to be modified - BEGIN --------#
 def fmt(x, pos):
     return '%.3f' % np.exp(x)
@@ -174,7 +183,7 @@ def display_response_curve(g_BGR):
         ax.set_xlabel('E: Log Exposure')
         ax.set_ylabel('Z: Pixel Value')
         ax.grid(linestyle=':', linewidth=1)
-    fig.savefig('response_curve.png', bbox_inches='tight', dpi=256)
+    fig.savefig(save_path + 'response_curve.png', bbox_inches='tight', dpi=256)
 
 def display_radiance_map(lnE_BGR):
 
@@ -194,8 +203,8 @@ def display_radiance_map(lnE_BGR):
 	radiance_bgr = np.exp(lnE_BGR)
 	print(np.max(radiance_bgr) / np.min(radiance_bgr))
     
-	fig.savefig('radiance_debevec.png', bbox_inches='tight', dpi=256)
-	cv2.imwrite('radiance_debecvec.hdr', radiance_bgr.astype(np.float32))
+	fig.savefig(save_path + 'radiance_debevec.png', bbox_inches='tight', dpi=256)
+	cv2.imwrite(save_path + 'radiance_debecvec.hdr', radiance_bgr.astype(np.float32))
 
 #-------- Need to be modified - END --------#
 
@@ -203,14 +212,17 @@ if __name__ == '__main__':
 
 	## add argument
 	parser = argparse.ArgumentParser()
-	parser.add_argument('--data_path', type = str, default = './data/', help = 'Path to the directory that contains images and shutter time file.')
-	parser.add_argument('--shutter_time_filename', type = str, default = 'shutter_times.txt', help = 'The name of the file where shutter time information is stored')
+	parser.add_argument('--data_path', type = str, default = './data/', help = 'Path to the directory that contains series of images.')
+	parser.add_argument('--result_path', type = str, default = './result/', help = 'Path to the directory that stores all of results.')
+	parser.add_argument('--series_of_images', type = str, default = 'memorial', help = 'The folder of a series of images that contains images and shutter time file.')
+	parser.add_argument('--shutter_time_filename', type = str, default = 'shutter_times.txt', help = 'The name of the file where shutter time information is stored.')
 	parser.add_argument('--points_num', type = int, default = 200, help = 'The number of points selected per image.')
 	parser.add_argument('--set_lambda', type = int, default = 100, help = 'The constant that determines the amount of smoothness.')
 	args = parser.parse_args()
 
 	## variables
-	path = args.data_path
+	path = os.path.join(args.data_path, args.series_of_images, "")
+	save_path = os.path.join(args.result_path, args.series_of_images, "")
 	filename = args.shutter_time_filename
 	n = args.points_num # select n points per image
 	l = args.set_lambda
@@ -225,5 +237,10 @@ if __name__ == '__main__':
 	radiances = get_hdr_by_Paul_Debevec(imgs, Z_BGR, lnT, l)
 
 	## tone mapping
-	ldrDrago = cv2.createTonemapDrago(1.0, 0.7).process(radiances)
-	cv2.imwrite("tonemapping_Drago.png", ldrDrago * 255 * 3)
+	ldrDrago = cv2.createTonemapDrago(1.0, 0.7).process(radiances) * 255 * 3
+	cv2.imwrite(save_path + "tonemapping_Drago.png", ldrDrago)
+	ldrDrago_gamma = gamma_correction(ldrDrago, 0.66)
+	cv2.imwrite(save_path + "tonemapping_Drago_gamma.png", ldrDrago_gamma)
+	
+
+	
