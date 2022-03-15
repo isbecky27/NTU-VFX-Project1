@@ -1,4 +1,3 @@
-window01.JPG 1/500
 window02.JPG 1/1000
 window03.JPG 1/500
 window04.JPG 1/250
