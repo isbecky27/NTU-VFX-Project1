@@ -170,44 +170,6 @@ def display_radiance_map(lnE_BGR, save_path):
 	cv2.imwrite(save_path + 'radiance_debecvec.hdr', radiance_bgr.astype(np.float32))
 
 #-------- Need to be modified - END --------#
-
-<<<<<<< HEAD
-=======
-if __name__ == '__main__':
-
-	## add argument
-	parser = argparse.ArgumentParser()
-	parser.add_argument('--data_path', type = str, default = './data/', help = 'Path to the directory that contains series of images.')
-	parser.add_argument('--result_path', type = str, default = './result/', help = 'Path to the directory that stores all of results.')
-	parser.add_argument('--series_of_images', type = str, default = 'desk', help = 'The folder of a series of images that contains images and shutter time file.')
-	parser.add_argument('--shutter_time_filename', type = str, default = 'shutter_times.txt', help = 'The name of the file where shutter time information is stored.')
-	parser.add_argument('--points_num', type = int, default = 70, help = 'The number of points selected per image.')
-	parser.add_argument('--set_lambda', type = int, default = 10, help = 'The constant that determines the amount of smoothness.')
-	args = parser.parse_args()
-
-	## variables
-	path = os.path.join(args.data_path, args.series_of_images, "")
-	save_path = os.path.join(args.result_path, args.series_of_images, "")
-	filename = args.shutter_time_filename
-	n = args.points_num # select n points per image
-	l = args.set_lambda
-
-	## read images and get the shutter time of images
-	imgs, lnT = read_imgs_and_log_deltaT(path, filename)
-
-	## select sample points
-	print("hi")
-	Z_BGR = select_sample_points(imgs, n)
-	print("hi2")
-
-	## construct HDR radiance map by using Paul Debevec's method
-	radiances = get_hdr_by_Paul_Debevec(imgs, Z_BGR, lnT, l)
-	print("hi3")
-	## tone mapping
-	ldrDrago = cv2.createTonemapDrago(1.0, 0.7).process(radiances) * 255 * 3
-	cv2.imwrite(save_path + "tonemapping_Drago.png", ldrDrago)
->>>>>>> 6b9b68391d543f77e2b55690ebedc104175262bf
-
 	
 
 	

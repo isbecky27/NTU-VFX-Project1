@@ -56,7 +56,7 @@ def gaussian_blur(Lm, s = 35, phi = 8, a = 0.5, e = 0.01):
     Vs_list_max = np.argmax(Vs_list > e, axis = 0)
     Vs_list_max -= 1 
     Vs_list_max[Vs_list_max < 0] = 0
-    print(Vs_list_max)
+    # print(Vs_list_max)
 
     i, j = np.ogrid[:h, :w]
     Lblur_smax = Lblur_s_list[i, j, Vs_list_max]
