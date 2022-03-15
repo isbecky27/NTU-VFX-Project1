@@ -1,0 +1,13 @@
+poster01.JPG 1/500
+poster02.JPG 1/250
+poster03.JPG 1/125
+poster04.JPG 1/60
+poster05.JPG 1/30
+poster06.JPG 1/15
+poster07.JPG 1/8
+poster08.JPG 1/4
+poster09.JPG 1/2
+poster10.JPG 1
+poster11.JPG 2
+poster12.JPG 4
+poster13.JPG 8
