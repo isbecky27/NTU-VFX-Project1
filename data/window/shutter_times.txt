@@ -1,0 +1,13 @@
+window01.JPG 1/500
+window02.JPG 1/1000
+window03.JPG 1/500
+window04.JPG 1/250
+window05.JPG 1/125
+window06.JPG 1/60
+window07.JPG 1/30
+window08.JPG 1/15
+window09.JPG 1/8
+window10.JPG 1/4
+window11.JPG 1/2
+window12.JPG 1
+window13.JPG 2

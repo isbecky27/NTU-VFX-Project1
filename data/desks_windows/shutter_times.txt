@@ -1,0 +1,14 @@
+desks_windows01.JPG 1/2000
+desks_windows02.JPG 1/1000
+desks_windows03.JPG 1/500
+desks_windows04.JPG 1/250
+desks_windows05.JPG 1/125
+desks_windows06.JPG 1/60
+desks_windows07.JPG 1/30
+desks_windows08.JPG 1/15
+desks_windows09.JPG 1/8
+desks_windows10.JPG 1/4
+desks_windows11.JPG 1/2
+desks_windows12.JPG 1
+desks_windows13.JPG 2
+desks_windows14.JPG 4

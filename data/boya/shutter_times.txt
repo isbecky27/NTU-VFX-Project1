@@ -1,0 +1,12 @@
+boya01.JPG 1/250
+boya02.JPG 1/125
+boya03.JPG 1/60
+boya04.JPG 1/30
+boya05.JPG 1/15
+boya06.JPG 1/8
+boya07.JPG 1/4
+boya08.JPG 1/2
+boya09.JPG 1
+boya10.JPG 2
+boya11.JPG 4
+boya12.JPG 8

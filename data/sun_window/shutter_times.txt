@@ -1,0 +1,13 @@
+sun_window01.JPG 1/2000
+sun_window02.JPG 1/1000
+sun_window03.JPG 1/500
+sun_window04.JPG 1/250
+sun_window05.JPG 1/125
+sun_window06.JPG 1/60
+sun_window07.JPG 1/30
+sun_window08.JPG 1/15
+sun_window09.JPG 1/8
+sun_window10.JPG 1/4
+sun_window11.JPG 1/2
+sun_window12.JPG 1
+sun_window13.JPG 2
