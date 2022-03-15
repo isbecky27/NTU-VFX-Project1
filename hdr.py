@@ -41,13 +41,12 @@ def select_sample_points(imgs, n):
 	Output : 
 		Z_BGR : list, 3 x p x n => Z_BGR[c][j][i] i-th pixel value in j-th image c-th color BGR
 	'''
+	
 	h, w, c = imgs[0].shape
-
 	index = [i for i in range(h * w)]
 	random_idx = np.array(random.sample(index, n))
 
-	i, j = random_idx // h, random_idx % w
-
+	i, j = random_idx // w, random_idx % w
 	Z_BGR = [[imgs[p][i, j, cc] for p in range(len(imgs))] for cc in range(c)]
 
 	# for j, img in enumerate(imgs):
@@ -231,11 +230,13 @@ if __name__ == '__main__':
 	imgs, lnT = read_imgs_and_log_deltaT(path, filename)
 
 	## select sample points
+	print("hi")
 	Z_BGR = select_sample_points(imgs, n)
+	print("hi2")
 
 	## construct HDR radiance map by using Paul Debevec's method
 	radiances = get_hdr_by_Paul_Debevec(imgs, Z_BGR, lnT, l)
-
+	print("hi3")
 	## tone mapping
 	ldrDrago = cv2.createTonemapDrago(1.0, 0.7).process(radiances) * 255 * 3
 	cv2.imwrite(save_path + "tonemapping_Drago.png", ldrDrago)
