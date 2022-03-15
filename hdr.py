@@ -128,6 +128,7 @@ def construct_radiance_map(imgs, g_BGR, B):
 			w_sum += weights
 
 		# Σ w * (g(z)-lnT) / Σ w
+		w_sum[w_sum == 0] = 0.000000001
 		lnE_BGR[:, :, cc] = (lnE_sum / w_sum)
 
 	return lnE_BGR
