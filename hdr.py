@@ -1,5 +1,6 @@
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib import pyplot as plt
+from tone_mapping import global_operator
 import matplotlib.ticker as ticker
 from fractions import Fraction
 import numpy as np
@@ -29,7 +30,7 @@ def read_imgs_and_log_deltaT(path, filename):
 	for line in content:
 		info = line.split()
 		img = cv2.imread(os.path.join(path, info[0]))
-		imgs.append(img)
+		imgs.append(cv2.resize(img, (1200, 800)))
 		shuttertimes.append(float(Fraction(info[1])))
 
 	lnT = np.log(shuttertimes).astype('float32')
@@ -47,6 +48,10 @@ def select_sample_points(imgs, n):
 	random_idx = np.array(random.sample(index, n))
 
 	i, j = random_idx // w, random_idx % w
+<<<<<<< HEAD
+=======
+
+>>>>>>> a4ddfead583dd365e46ef58691706c22d1b627dc
 	Z_BGR = [[imgs[p][i, j, cc] for p in range(len(imgs))] for cc in range(c)]
 
 	# for j, img in enumerate(imgs):
@@ -159,15 +164,6 @@ def construct_radiance_map(imgs, g_BGR, B):
 
 	return lnE_BGR
 
-def gamma_correction(img, r):
-	'''
-		r > 1 : reduce brightness
-		r < 1 : enhance brightness
-	'''
-	img = (img.clip(min = 0) / 255) ** r * 255
-
-	return img
-
 #-------- Need to be modified - BEGIN --------#
 def fmt(x, pos):
     return '%.3f' % np.exp(x)
@@ -213,10 +209,10 @@ if __name__ == '__main__':
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--data_path', type = str, default = './data/', help = 'Path to the directory that contains series of images.')
 	parser.add_argument('--result_path', type = str, default = './result/', help = 'Path to the directory that stores all of results.')
-	parser.add_argument('--series_of_images', type = str, default = 'memorial', help = 'The folder of a series of images that contains images and shutter time file.')
+	parser.add_argument('--series_of_images', type = str, default = 'desk', help = 'The folder of a series of images that contains images and shutter time file.')
 	parser.add_argument('--shutter_time_filename', type = str, default = 'shutter_times.txt', help = 'The name of the file where shutter time information is stored.')
-	parser.add_argument('--points_num', type = int, default = 200, help = 'The number of points selected per image.')
-	parser.add_argument('--set_lambda', type = int, default = 100, help = 'The constant that determines the amount of smoothness.')
+	parser.add_argument('--points_num', type = int, default = 70, help = 'The number of points selected per image.')
+	parser.add_argument('--set_lambda', type = int, default = 10, help = 'The constant that determines the amount of smoothness.')
 	args = parser.parse_args()
 
 	## variables
@@ -240,8 +236,9 @@ if __name__ == '__main__':
 	## tone mapping
 	ldrDrago = cv2.createTonemapDrago(1.0, 0.7).process(radiances) * 255 * 3
 	cv2.imwrite(save_path + "tonemapping_Drago.png", ldrDrago)
-	ldrDrago_gamma = gamma_correction(ldrDrago, 0.66)
-	cv2.imwrite(save_path + "tonemapping_Drago_gamma.png", ldrDrago_gamma)
+
+	ldrGlobal = global_operator(radiances)
+	cv2.imwrite(save_path + "tonemapping_Global.png", ldrGlobal)
 	
 
 	
