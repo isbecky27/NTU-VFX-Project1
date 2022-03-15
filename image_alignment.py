@@ -1,5 +1,5 @@
 # image alignment by using MTB algorithm
-from hdr import read_imgs_and_log_deltaT
+from main import read_imgs_and_log_deltaT
 import numpy as np
 import argparse
 import random

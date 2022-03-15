@@ -1,4 +1,3 @@
-from hdr import read_imgs_and_log_deltaT
 import numpy as np
 import argparse
 import cv2
@@ -52,7 +51,6 @@ def gaussian_blur(Lm, s = 35, phi = 8, a = 0.5, e = 0.01):
     Lblur_s_list = [cv2.GaussianBlur(Lm, (i, i), 0) for i in range(1, s+1, 2)]
     Lblur_s_list.insert(0, Lm) # add origin Lm
     Lblur_s_list = np.array(Lblur_s_list).transpose(1, 2, 0)
-    print(Lblur_s_list.shape)
 
     Vs_list = np.array([np.abs(Lblur_s_list[:, :, idx] - Lblur_s_list[:, :, idx + 1]) / ((2 ** phi) * a / (ss ** 2) + Lblur_s_list[:, :, idx]) for idx, ss in enumerate(range(1, s, 2))])
     Vs_list_max = np.argmax(Vs_list > e, axis = 0)
@@ -122,6 +120,7 @@ def tone_mapping_using_package(hdr, method = '', save_path = ''):
         ldr = cv2.createTonemap(3.5).process(hdr) * 255 * 3
         cv2.imwrite(save_path + "tonemapping_Tonemap.png", ldr)
 
+'''
 if __name__ == '__main__':
 
     ## add argument
@@ -159,5 +158,4 @@ if __name__ == '__main__':
     
     cv2.imshow('Tone Mapping', ldr)
     cv2.waitKey(0)
-
-    
+'''

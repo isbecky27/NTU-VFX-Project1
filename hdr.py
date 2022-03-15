@@ -1,6 +1,5 @@
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib import pyplot as plt
-from tone_mapping import global_operator
 import matplotlib.ticker as ticker
 from fractions import Fraction
 import numpy as np
@@ -8,34 +7,6 @@ import argparse
 import random
 import cv2
 import os
-
-def read_imgs_and_log_deltaT(path, filename):
-	'''
-	Input :
-		path : the folder path to the .txt file
-		filename : filename of .txt which stores the information of images
-			[image1 filename] [shutter time]
-			[image2 filename] [shutter time]
-			....
-	Output:
-		imgs : p x h x w x c => p images
-		lnT  : p x 1 =>array of log shutter times
-	'''
-
-	with open(os.path.join(path, filename)) as f:
-		content = f.readlines()
-
-	imgs, shuttertimes = [], []
-
-	for line in content:
-		info = line.split()
-		img = cv2.imread(os.path.join(path, info[0]))
-		imgs.append(cv2.resize(img, (1200, 800)))
-		shuttertimes.append(float(Fraction(info[1])))
-
-	lnT = np.log(shuttertimes).astype('float32')
-
-	return imgs, lnT
 
 def select_sample_points(imgs, n):
 	'''
@@ -58,13 +29,13 @@ def select_sample_points(imgs, n):
 
 	return Z_BGR
 
-def get_hdr_by_Paul_Debevec(imgs, Z_BGR, lnT, l):
+def get_hdr_by_Paul_Debevec(imgs, Z_BGR, lnT, l, save_path = ''):
 	
 	g_BGR = [get_g_function(np.array(Z).T, lnT, l) for Z in Z_BGR]
 	lnE_BGR = construct_radiance_map(imgs, g_BGR, lnT)
 
-	display_radiance_map(lnE_BGR)
-	display_response_curve(g_BGR)
+	display_radiance_map(lnE_BGR, save_path)
+	display_response_curve(g_BGR, save_path)
 
 	return np.exp(lnE_BGR)
 
@@ -165,7 +136,7 @@ def construct_radiance_map(imgs, g_BGR, B):
 def fmt(x, pos):
     return '%.3f' % np.exp(x)
 
-def display_response_curve(g_BGR):
+def display_response_curve(g_BGR, save_path):
     bgr_string = ['blue', 'green', 'red']
     fig, axes = plt.subplots(1, 3, figsize=(15, 5))
     for c in range(3):
@@ -177,7 +148,7 @@ def display_response_curve(g_BGR):
         ax.grid(linestyle=':', linewidth=1)
     fig.savefig(save_path + 'response_curve.png', bbox_inches='tight', dpi=256)
 
-def display_radiance_map(lnE_BGR):
+def display_radiance_map(lnE_BGR, save_path):
 
 	plt.clf()
 	fig, axes = plt.subplots(1, 3, figsize=(15, 5))
@@ -200,40 +171,7 @@ def display_radiance_map(lnE_BGR):
 
 #-------- Need to be modified - END --------#
 
-if __name__ == '__main__':
 
-	## add argument
-	parser = argparse.ArgumentParser()
-	parser.add_argument('--data_path', type = str, default = './data/', help = 'Path to the directory that contains series of images.')
-	parser.add_argument('--result_path', type = str, default = './result/', help = 'Path to the directory that stores all of results.')
-	parser.add_argument('--series_of_images', type = str, default = 'desk', help = 'The folder of a series of images that contains images and shutter time file.')
-	parser.add_argument('--shutter_time_filename', type = str, default = 'shutter_times.txt', help = 'The name of the file where shutter time information is stored.')
-	parser.add_argument('--points_num', type = int, default = 70, help = 'The number of points selected per image.')
-	parser.add_argument('--set_lambda', type = int, default = 10, help = 'The constant that determines the amount of smoothness.')
-	args = parser.parse_args()
-
-	## variables
-	path = os.path.join(args.data_path, args.series_of_images, "")
-	save_path = os.path.join(args.result_path, args.series_of_images, "")
-	filename = args.shutter_time_filename
-	n = args.points_num # select n points per image
-	l = args.set_lambda
-
-	## read images and get the shutter time of images
-	imgs, lnT = read_imgs_and_log_deltaT(path, filename)
-
-	## select sample points
-	Z_BGR = select_sample_points(imgs, n)
-
-	## construct HDR radiance map by using Paul Debevec's method
-	radiances = get_hdr_by_Paul_Debevec(imgs, Z_BGR, lnT, l)
-
-	## tone mapping
-	ldrDrago = cv2.createTonemapDrago(1.0, 0.7).process(radiances) * 255 * 3
-	cv2.imwrite(save_path + "tonemapping_Drago.png", ldrDrago)
-
-	ldrGlobal = global_operator(radiances)
-	cv2.imwrite(save_path + "tonemapping_Global.png", ldrGlobal)
 	
 
 	
