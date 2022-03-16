@@ -121,6 +121,8 @@ def tone_mapping_using_package(hdr, method = '', save_path = ''):
         cv2.imwrite(save_path + "tonemapping_Tonemap.png", ldr)
 
 '''
+from main import read_imgs_and_log_deltaT
+
 if __name__ == '__main__':
 
     ## add argument

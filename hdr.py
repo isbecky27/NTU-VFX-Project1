@@ -1,7 +1,5 @@
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
-from fractions import Fraction
 import numpy as np
 import argparse
 import random
@@ -34,8 +32,8 @@ def get_hdr_by_Paul_Debevec(imgs, Z_BGR, lnT, l, save_path = ''):
 	g_BGR = [get_g_function(np.array(Z).T, lnT, l) for Z in Z_BGR]
 	lnE_BGR = construct_radiance_map(imgs, g_BGR, lnT)
 
-	display_radiance_map(lnE_BGR, save_path)
-	display_response_curve(g_BGR, save_path)
+	get_radiance_map(lnE_BGR, save_path)
+	get_response_curve(g_BGR, save_path)
 
 	return np.exp(lnE_BGR)
 
@@ -132,45 +130,69 @@ def construct_radiance_map(imgs, g_BGR, B):
 		lnE_BGR[:, :, cc] = (lnE_sum / w_sum)
 
 	return lnE_BGR
-
-#-------- Need to be modified - BEGIN --------#
-def fmt(x, pos):
-    return '%.3f' % np.exp(x)
-
-def display_response_curve(g_BGR, save_path):
-    bgr_string = ['blue', 'green', 'red']
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-    for c in range(3):
-        ax = axes[c]
-        ax.plot(g_BGR[c], np.arange(256), c=bgr_string[c])
-        ax.set_title(bgr_string[c])
-        ax.set_xlabel('E: Log Exposure')
-        ax.set_ylabel('Z: Pixel Value')
-        ax.grid(linestyle=':', linewidth=1)
-    fig.savefig(save_path + 'response_curve.png', bbox_inches='tight', dpi=256)
-
-def display_radiance_map(lnE_BGR, save_path):
-
-	plt.clf()
-	fig, axes = plt.subplots(1, 3, figsize=(15, 5))
-	bgr_string = ['blue', 'green', 'red']
-
-	for cc in range(3):
-		ax = axes[cc]
-		im = ax.imshow(lnE_BGR[:, :, cc], cmap='jet')
-		ax.set_title(bgr_string[cc])
-		ax.set_axis_off()
-		divider = make_axes_locatable(ax)
-		cax = divider.append_axes("right", size="5%", pad=0.05)
-		fig.colorbar(im, cax=cax, format=ticker.FuncFormatter(fmt))
-
-	radiance_bgr = np.exp(lnE_BGR)
-	print(np.max(radiance_bgr) / np.min(radiance_bgr))
-    
-	fig.savefig(save_path + 'radiance_debevec.png', bbox_inches='tight', dpi=256)
-	cv2.imwrite(save_path + 'radiance_debecvec.hdr', radiance_bgr.astype(np.float32))
-
-#-------- Need to be modified - END --------#
 	
+def get_response_curve(g_BGR, save_path):
 
-	
+	fig = plt.figure(figsize=(15, 5))
+	bgr = ['Blue', 'Green', 'Red']
+
+	for c in range(len(g_BGR)):
+		plt.subplot(1, 3, c + 1)
+		plt.plot(g_BGR[c], np.arange(256), color = bgr[c])
+		plt.title(bgr[c])
+		plt.xlabel('E: Log Exposure')
+		plt.ylabel('Z: Pixel Value')
+
+	plt.tight_layout()
+	# plt.show()
+	fig.savefig(save_path + 'response_curve.png', bbox_inches = 'tight')
+
+def get_radiance_map(lnE_BGR, save_path):
+
+	h, w, c = lnE_BGR.shape
+
+	fig = plt.figure(figsize=(15, 5))
+	bgr = ['Blue', 'Green', 'Red']
+
+	for cc in range(c):
+		plt.subplot(1, 3, cc + 1)
+		img = plt.imshow(lnE_BGR[:, :, cc], cmap = 'jet')
+		plt.colorbar(img, fraction = 0.046 * h / w, pad = 0.05, format = ticker.FuncFormatter(lambda x, _:'%.2f' % np.exp(x)))
+		plt.title(bgr[cc])
+		plt.axis('off')
+
+	plt.tight_layout()
+	# plt.show()
+
+	fig.savefig(save_path + 'radiance_Debevec.png', bbox_inches = 'tight')
+	cv2.imwrite(save_path + 'radiance_Debevec.hdr', np.exp(lnE_BGR).astype('float32'))
+
+'''
+from main import read_imgs_and_log_deltaT
+
+if __name__ == '__main__':
+
+	## add argument
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--data_path', type = str, default = './data/', help = 'Path to the directory that contains series of images.')
+	parser.add_argument('--series_of_images', type = str, default = 'window', help = 'The folder of a series of images that contains images and shutter time file.')
+	parser.add_argument('--shutter_time_filename', type = str, default = 'shutter_times.txt', help = 'The name of the file where shutter time information is stored.')
+	args = parser.parse_args()
+
+	path = os.path.join(args.data_path, args.series_of_images, "")
+	filename = args.shutter_time_filename
+
+	## read images
+	imgs, lnT = read_imgs_and_log_deltaT(path, filename)
+	times = np.exp(lnT)
+
+	## HDR using opencv package
+	calibrate = cv2.createCalibrateDebevec()
+	response = calibrate.process(imgs, times)
+	merge_debevec = cv2.createMergeDebevec()
+	# hdr = merge_debevec.process(imgs, times, response)
+	# hdr = np.log(hdr)
+
+	display_response_curve(response, '')
+'''
+
