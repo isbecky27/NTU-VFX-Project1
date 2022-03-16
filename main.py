@@ -24,7 +24,7 @@ def read_imgs_and_log_deltaT(path, filename):
     for line in content:
         info = line.split()
         img = cv2.imread(os.path.join(path, info[0]))
-        imgs.append(cv2.resize(img, (1200, 800)))
+        imgs.append(cv2.resize(img, (img.shape[1] // 5, img.shape[0] // 5)))
         shuttertimes.append(float(Fraction(info[1])))
 
     lnT = np.log(shuttertimes).astype('float32')
