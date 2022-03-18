@@ -1,6 +1,5 @@
 # image alignment by using MTB algorithm
 from cmath import inf
-from main import read_imgs_and_times
 import numpy as np
 import argparse
 import cv2
@@ -36,7 +35,6 @@ def threshold_bitmap(img):
     _, img_binary = cv2.threshold(img, median, 255, cv2.THRESH_BINARY)
     return img_binary
 
-
 def cal_diff(flag, tar):
     '''
     calculate the difference between two images
@@ -56,7 +54,6 @@ def matrix(dx, dy):
                     [0, 1, dy]])
     return M
 
-
 def shift_img(flag, tar, dx, dy):
     h, w = flag.shape
     min_err = inf
@@ -71,7 +68,6 @@ def shift_img(flag, tar, dx, dy):
                 ret_dx, ret_dy = dx + i, dy + j
     return ret_dx, ret_dy
 
-
 def align(flag, tar, layer):
     if layer == 0:
         dx, dy = shift_img(flag, tar, 0, 0)
@@ -84,7 +80,6 @@ def align(flag, tar, layer):
         dy *= 2
         dx, dy = shift_img(flag, tar, dx, dy)
     return dx, dy
-    
 
 def image_alignment(imgs):
     imgs_gray = [BGR2GRAY(img) for img in imgs]
@@ -107,6 +102,8 @@ def image_alignment(imgs):
     
     return ret_imgs
 
+'''
+from main import read_imgs_and_times
 
 if __name__ == '__main__':
 
@@ -126,6 +123,5 @@ if __name__ == '__main__':
 
     ## image alignment
     image_alignment(imgs)
-    
-
+'''
     

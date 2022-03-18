@@ -1,3 +1,4 @@
+from image_alignment import *
 from hdr_debevec import *
 from hdr_robertson import *
 from tone_mapping import *
@@ -55,6 +56,12 @@ if __name__ == '__main__':
     print('Read images...')
     imgs, shuttertimes = read_imgs_and_times(path, filename)
     lnT = np.log(shuttertimes).astype('float32')
+
+    ## image alignment
+    print(np.array(imgs).shape)
+    print('Image alignment...')
+    imgs = image_alignment(imgs)
+    print(np.array(imgs).shape)
 
     ## construct HDR radiance map by using Paul Debevec's method
     if args.HDR_method == 0:

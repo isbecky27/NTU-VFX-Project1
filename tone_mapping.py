@@ -121,7 +121,7 @@ def tone_mapping_using_package(hdr, method = '', save_path = ''):
         cv2.imwrite(save_path + "tonemapping_Tonemap.png", ldr)
 
 '''
-from main import read_imgs_and_log_deltaT
+from main import read_imgs_and_times
 
 if __name__ == '__main__':
 
@@ -136,8 +136,7 @@ if __name__ == '__main__':
     filename = args.shutter_time_filename
 
     ## read images
-    imgs, lnT = read_imgs_and_log_deltaT(path, filename)
-    times = np.exp(lnT)
+    imgs, times = read_imgs_and_times(path, filename)
 
     ## HDR using opencv package
     calibrate = cv2.createCalibrateDebevec()
