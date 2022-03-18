@@ -1,12 +1,10 @@
 # image alignment by using MTB algorithm
 from cmath import inf
-from main import read_imgs_and_log_deltaT
+from main import read_imgs_and_times
 import numpy as np
 import argparse
 import cv2
 import os
-
-
 
 def BGR2GRAY(img):
     '''
@@ -124,7 +122,7 @@ if __name__ == '__main__':
     filename = args.shutter_time_filename
 
     ## read images
-    imgs, _ = read_imgs_and_log_deltaT(path, filename)
+    imgs, _ = read_imgs_and_times(path, filename)
 
     ## image alignment
     image_alignment(imgs)

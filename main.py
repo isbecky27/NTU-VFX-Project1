@@ -1,9 +1,10 @@
-from hdr import *
+from hdr_debevec import *
+from hdr_robertson import *
 from tone_mapping import *
 from fractions import Fraction
 import cv2
 
-def read_imgs_and_log_deltaT(path, filename):
+def read_imgs_and_times(path, filename):
     '''
     Input :
         path : the folder path to the .txt file
@@ -27,9 +28,7 @@ def read_imgs_and_log_deltaT(path, filename):
         imgs.append(cv2.resize(img, (img.shape[1] // 5, img.shape[0] // 5)))
         shuttertimes.append(float(Fraction(info[1])))
 
-    lnT = np.log(shuttertimes).astype('float32')
-
-    return imgs, lnT
+    return imgs, np.array(shuttertimes)
 
 if __name__ == '__main__':
 
@@ -39,28 +38,35 @@ if __name__ == '__main__':
     parser.add_argument('--result_path', type = str, default = './result/', help = 'Path to the directory that stores all of results.')
     parser.add_argument('--series_of_images', type = str, default = 'desk', help = 'The folder of a series of images that contains images and shutter time file.')
     parser.add_argument('--shutter_time_filename', type = str, default = 'shutter_times.txt', help = 'The name of the file where shutter time information is stored.')
+    parser.add_argument('--HDR_method', type = int, default = 0, help = "0: Paul Debevec's method, 1: Robertson's method")
     parser.add_argument('--points_num', type = int, default = 70, help = 'The number of points selected per image.')
     parser.add_argument('--set_lambda', type = int, default = 50, help = 'The constant that determines the amount of smoothness.')
     args = parser.parse_args()
 
     ## variables
+    method = 'Debevec' if args.HDR_method == 0 else 'Robertson'
     path = os.path.join(args.data_path, args.series_of_images, "")
-    save_path = os.path.join(args.result_path, args.series_of_images, "")
+    save_path = os.path.join(args.result_path, args.series_of_images, method, "")
     filename = args.shutter_time_filename
     n = args.points_num # select n points per image
     l = args.set_lambda
 
     ## read images and get the shutter time of images
     print('Read images...')
-    imgs, lnT = read_imgs_and_log_deltaT(path, filename)
-
-    ## select sample points
-    print('Select sample points...')
-    Z_BGR = select_sample_points(imgs, n)
+    imgs, shuttertimes = read_imgs_and_times(path, filename)
+    lnT = np.log(shuttertimes).astype('float32')
 
     ## construct HDR radiance map by using Paul Debevec's method
-    print('Construct HDR radiance map...')
-    radiances = get_hdr_by_Paul_Debevec(imgs, Z_BGR, lnT, l, save_path)
+    if args.HDR_method == 0:
+        ## select sample points
+        print('Select sample points...')
+        Z_BGR = select_sample_points(imgs, n)
+        print("Construct HDR radiance map by using Paul Debevec's method...")
+        radiances = get_hdr_by_Paul_Debevec(imgs, Z_BGR, lnT, l, save_path)
+    ## construct HDR radiance map by using Robertson's method
+    else:
+        print("Construct HDR radiance map by using Robertson's method...")
+        radiances = get_hdr_by_Robertson(imgs, shuttertimes, 5, save_path = save_path)
 
     ## tone mapping
     print('Tone mapping...')

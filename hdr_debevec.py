@@ -1,3 +1,4 @@
+# HDR reconstruction using Paul Debevec's method
 from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 import numpy as np
@@ -126,7 +127,7 @@ def construct_radiance_map(imgs, g_BGR, B):
 			w_sum += weights
 
 		# Σ w * (g(z)-lnT) / Σ w
-		w_sum[w_sum == 0] = 0.000000001
+		w_sum[w_sum == 0] = 1.e-10
 		lnE_BGR[:, :, cc] = (lnE_sum / w_sum)
 
 	return lnE_BGR
@@ -168,7 +169,7 @@ def get_radiance_map(lnE_BGR, save_path):
 	cv2.imwrite(save_path + 'radiance_Debevec.hdr', np.exp(lnE_BGR).astype('float32'))
 
 '''
-from main import read_imgs_and_log_deltaT
+from main import read_imgs_and_times
 
 if __name__ == '__main__':
 
@@ -183,8 +184,7 @@ if __name__ == '__main__':
 	filename = args.shutter_time_filename
 
 	## read images
-	imgs, lnT = read_imgs_and_log_deltaT(path, filename)
-	times = np.exp(lnT)
+	imgs, times = read_imgs_and_times(path, filename)
 
 	## HDR using opencv package
 	calibrate = cv2.createCalibrateDebevec()
