@@ -1,9 +1,12 @@
 # image alignment by using MTB algorithm
 from cmath import inf
+from main import read_imgs_and_log_deltaT
 import numpy as np
 import argparse
 import cv2
 import os
+
+
 
 def BGR2GRAY(img):
     '''
@@ -35,6 +38,7 @@ def threshold_bitmap(img):
     _, img_binary = cv2.threshold(img, median, 255, cv2.THRESH_BINARY)
     return img_binary
 
+
 def cal_diff(flag, tar):
     '''
     calculate the difference between two images
@@ -54,6 +58,7 @@ def matrix(dx, dy):
                     [0, 1, dy]])
     return M
 
+
 def shift_img(flag, tar, dx, dy):
     h, w = flag.shape
     min_err = inf
@@ -68,6 +73,7 @@ def shift_img(flag, tar, dx, dy):
                 ret_dx, ret_dy = dx + i, dy + j
     return ret_dx, ret_dy
 
+
 def align(flag, tar, layer):
     if layer == 0:
         dx, dy = shift_img(flag, tar, 0, 0)
@@ -80,6 +86,7 @@ def align(flag, tar, layer):
         dy *= 2
         dx, dy = shift_img(flag, tar, dx, dy)
     return dx, dy
+    
 
 def image_alignment(imgs):
     imgs_gray = [BGR2GRAY(img) for img in imgs]
@@ -94,7 +101,7 @@ def image_alignment(imgs):
     
     ret_imgs = []
 
-    for i in range(0, len(tb)):
+    for i in range(len(tb) // 2 - len(tb) // 4, len(tb) // 2 + len(tb) // 4):
         final_dx, final_dy = align(flag, tb[i], layer)
         M = matrix(final_dx, final_dy)
         new_img = cv2.warpAffine(imgs[i], M, (w, h))
@@ -102,8 +109,6 @@ def image_alignment(imgs):
     
     return ret_imgs
 
-'''
-from main import read_imgs_and_times
 
 if __name__ == '__main__':
 
@@ -119,9 +124,10 @@ if __name__ == '__main__':
     filename = args.shutter_time_filename
 
     ## read images
-    imgs, _ = read_imgs_and_times(path, filename)
+    imgs, _ = read_imgs_and_log_deltaT(path, filename)
 
     ## image alignment
     image_alignment(imgs)
-'''
+    
+
     
