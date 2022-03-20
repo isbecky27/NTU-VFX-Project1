@@ -51,7 +51,7 @@ def cal_diff(base_tb, base_eb, tar_tb, tar_eb):
     tar_eb = tar_eb.astype(int)
     diff = np.bitwise_xor(base_tb, tar_tb)
     diff = np.bitwise_and(diff, base_eb)
-    # diff = np.bitwise_and(diff, tar_eb)
+    diff = np.bitwise_and(diff, tar_eb)
     return np.count_nonzero(diff)
 
 def matrix(dx, dy):
@@ -90,10 +90,13 @@ def align(base_tb, base_eb, tar_tb, tar_eb, layer):
     
 
 def image_alignment(imgs):
+
     imgs_gray = [BGR2GRAY(img) for img in imgs]
-    # generate threshold bitmap
+
+    # generate threshold, exclusion bitmaps
     tb = np.array([threshold_bitmap(img) for img in imgs_gray])
     eb = np.array([exclusion_bitmap(img) for img in imgs_gray])
+
     # base_tb (base) image, choose the middle one
     base_id = len(tb) // 2
     base_tb = tb[base_id]
@@ -103,11 +106,6 @@ def image_alignment(imgs):
     layer = 4
     
     ret_imgs = []
-
-    # for i in range(len(tb)):
-    #     cv2.imwrite("./myresult/tb_%d.PNG" % i, tb[i])
-    #     cv2.imwrite("./myresult/eb_%d.PNG" % i, eb[i])
-
 
     for i in range(0, len(tb)):
         if i == base_id:
