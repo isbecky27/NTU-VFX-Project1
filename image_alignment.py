@@ -25,8 +25,8 @@ def exclusion_bitmap(img):
     median = np.median(img.flatten())
     # eb = cv2.inRange(img, median - 4, median + 4) # wrong
     eb = np.array(img)
-    eb[np.where(eb <= median - 10)] = 0
-    eb[np.where(eb > median + 10)] = 255
+    eb[np.where(eb <= median - 4)] = 0
+    eb[np.where(eb > median + 4)] = 255
     return eb
 
 def threshold_bitmap(img):
@@ -39,18 +39,19 @@ def threshold_bitmap(img):
     return img_binary
 
 
-def cal_diff(flag, tar):
+def cal_diff(base_tb, base_eb, tar_tb, tar_eb):
     '''
     calculate the difference between two images
     '''
-    eb1 = exclusion_bitmap(flag)
-    eb2 = exclusion_bitmap(tar)
+   
     # int type for bitwise operation
-    flag = flag.astype(int) 
-    tar = tar.astype(int)
-    diff = np.bitwise_xor(flag, tar)
-    diff = np.bitwise_and(diff, eb1)
-    diff = np.bitwise_and(diff, eb2)
+    base_tb = base_tb.astype(int) 
+    tar_tb = tar_tb.astype(int)
+    base_eb = base_eb.astype(int) 
+    tar_eb = tar_eb.astype(int)
+    diff = np.bitwise_xor(base_tb, tar_tb)
+    diff = np.bitwise_and(diff, base_eb)
+    # diff = np.bitwise_and(diff, tar_eb)
     return np.count_nonzero(diff)
 
 def matrix(dx, dy):
@@ -59,32 +60,32 @@ def matrix(dx, dy):
     return M
 
 
-def shift_img(flag, tar, dx, dy):
-    h, w = flag.shape
+def shift_img(base_tb, base_eb, tar_tb, tar_eb, dx, dy):
+    h, w = base_tb.shape
     min_err = inf
     ret_dx, ret_dy = dx, dy
     for i in range(-1, 2):
         for j in range(-1, 2):
             M = matrix(dx + i, dy + j)
-            tar_shift = cv2.warpAffine(tar, M, (w, h))
-            diff = cal_diff(flag, tar_shift)
+            tar_tb_shift, tar_eb_shift = cv2.warpAffine(tar_tb, M, (w, h)), cv2.warpAffine(tar_eb, M, (w, h))
+            diff = cal_diff(base_tb, base_eb, tar_tb_shift, tar_eb_shift)
             if diff < min_err:
                 min_err = diff
                 ret_dx, ret_dy = dx + i, dy + j
     return ret_dx, ret_dy
 
 
-def align(flag, tar, layer):
+def align(base_tb, base_eb, tar_tb, tar_eb, layer):
     if layer == 0:
-        dx, dy = shift_img(flag, tar, 0, 0)
+        dx, dy = shift_img(base_tb, base_eb, tar_tb, tar_eb, 0, 0)
     else:
-        h, w = flag.shape
-        flag_shrink = cv2.resize(flag, (w//2, h//2))
-        tar_shrink = cv2.resize(tar, (w//2, h//2))
-        dx, dy = align(flag_shrink, tar_shrink, layer-1)
+        h, w = base_tb.shape
+        base_tb_shrink, base_eb_shrink = cv2.resize(base_tb, (w//2, h//2)), cv2.resize(base_eb, (w//2, h//2))
+        tar_tb_shrink, tar_eb_shrink = cv2.resize(tar_tb, (w//2, h//2)), cv2.resize(tar_eb, (w//2, h//2))
+        dx, dy = align(base_tb_shrink, base_eb_shrink, tar_tb_shrink, tar_eb_shrink, layer-1)
         dx *= 2
         dy *= 2
-        dx, dy = shift_img(flag, tar, dx, dy)
+        dx, dy = shift_img(base_tb, base_eb, tar_tb, tar_eb, dx, dy)
     return dx, dy
     
 
@@ -92,17 +93,27 @@ def image_alignment(imgs):
     imgs_gray = [BGR2GRAY(img) for img in imgs]
     # generate threshold bitmap
     tb = np.array([threshold_bitmap(img) for img in imgs_gray])
-    # flag (base) image, choose the middle one
-    flagid = len(tb) // 2
-    flag = tb[flagid]
-    h, w = flag.shape
+    eb = np.array([exclusion_bitmap(img) for img in imgs_gray])
+    # base_tb (base) image, choose the middle one
+    base_id = len(tb) // 2
+    base_tb = tb[base_id]
+    base_eb = eb[base_id]
+    h, w = base_tb.shape
     
-    layer = 2
+    layer = 4
     
     ret_imgs = []
 
-    for i in range(len(tb) // 2 - len(tb) // 4, len(tb) // 2 + len(tb) // 4):
-        final_dx, final_dy = align(flag, tb[i], layer)
+    # for i in range(len(tb)):
+    #     cv2.imwrite("./myresult/tb_%d.PNG" % i, tb[i])
+    #     cv2.imwrite("./myresult/eb_%d.PNG" % i, eb[i])
+
+
+    for i in range(0, len(tb)):
+        if i == base_id:
+            ret_imgs.append(imgs[i])
+            continue
+        final_dx, final_dy = align(base_tb, base_eb, tb[i], eb[i], layer)
         M = matrix(final_dx, final_dy)
         new_img = cv2.warpAffine(imgs[i], M, (w, h))
         ret_imgs.append(new_img)
@@ -110,6 +121,7 @@ def image_alignment(imgs):
     return ret_imgs
 
 
+'''
 if __name__ == '__main__':
 
     ## add argument
@@ -127,7 +139,10 @@ if __name__ == '__main__':
     imgs, _ = read_imgs_and_log_deltaT(path, filename)
 
     ## image alignment
-    image_alignment(imgs)
+    imgs = image_alignment(imgs)
+    for i in range(len(imgs)):
+        cv2.imwrite("./myresult/align_%d.PNG" % i, imgs[i])
+'''    
     
 
     
