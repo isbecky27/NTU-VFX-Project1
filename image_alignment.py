@@ -1,6 +1,6 @@
 # image alignment by using MTB algorithm
 from cmath import inf
-from main import read_imgs_and_log_deltaT
+from main import read_imgs_and_times
 import numpy as np
 import argparse
 import cv2
