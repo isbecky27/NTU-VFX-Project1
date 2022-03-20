@@ -26,7 +26,8 @@ def read_imgs_and_times(path, filename):
     for line in content:
         info = line.split()
         img = cv2.imread(os.path.join(path, info[0]))
-        imgs.append(cv2.resize(img, (img.shape[1] // 5, img.shape[0] // 5)))
+        # imgs.append(cv2.resize(img, (img.shape[1] // 5, img.shape[0] // 5)))
+        imgs.append(img)
         shuttertimes.append(float(Fraction(info[1])))
 
     return imgs, np.array(shuttertimes)
@@ -48,6 +49,7 @@ if __name__ == '__main__':
     method = 'Debevec' if args.HDR_method == 0 else 'Robertson'
     path = os.path.join(args.data_path, args.series_of_images, "")
     save_path = os.path.join(args.result_path, args.series_of_images, method, "")
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
     filename = args.shutter_time_filename
     n = args.points_num # select n points per image
     l = args.set_lambda
