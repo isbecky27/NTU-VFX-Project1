@@ -33,13 +33,13 @@ python main.py [--data_path DATA_PATH] [--result_path RESULT_PATH]
                [--HDR_method HDR_METHOD] [--points_num POINTS_NUM] [--set_lambda SET_LAMBDA]
 ```
 #### Optional arguments 
-    * `--data_path` : Path to the directory that contains series of images.
-    * `--result_path` : Path to the directory that stores all of results.
-    * `--series_of_images` : The folder of a series of images that contains images and shutter time file.
-    * `--shutter_time_filename` : The name of the file where shutter time information is stored.
-    * `--HDR_method` : 0 : Paul Debevec's method, 1: Robertson's method.
-    * `--points_num` : The number of points selected per image.
-    * `--set_lambda` : The constant that determines the amount of smoothness.
+* `--data_path` : Path to the directory that contains series of images.
+* `--result_path` : Path to the directory that stores all of results.
+* `--series_of_images` : The folder of a series of images that contains images and shutter time file.
+* `--shutter_time_filename` : The name of the file where shutter time information is stored.
+* `--HDR_method` : 0 : Paul Debevec's method, 1: Robertson's method.
+* `--points_num` : The number of points selected per image.
+* `--set_lambda` : The constant that determines the amount of smoothness.
     
 #### Display the usage message of all arguments
 ```python=
