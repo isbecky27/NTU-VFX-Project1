@@ -9,6 +9,9 @@
 * numpy == 1.20.1
 * opencv-python == 4.5.3.56
 
+### Directory Structure 
+``` hw1_[13]  ├─ code   └─ data        ├─ images        │  ├─ desk           │  └─ window                                 └─ results                  ├─ desk                  │  ├─ Debevec                  │  └─ Robertson                  └─ window                         ├─ Debevec                       └─ Robertson  ```
+
 ### Run Code
 ```python=
 python main.py [--data_path DATA_PATH] [--result_path RESULT_PATH]
