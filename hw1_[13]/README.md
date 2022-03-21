@@ -10,7 +10,21 @@
 * opencv-python == 4.5.3.56
 
 ### Directory Structure 
-``` hw1_[13]  ├─ code   └─ data        ├─ images        │  ├─ desk           │  └─ window                                 └─ results                  ├─ desk                  │  ├─ Debevec                  │  └─ Robertson                  └─ window                         ├─ Debevec                       └─ Robertson  ```
+``` 
+hw1_[13]
+ ├─ code  
+ └─ data
+    ├─ images        
+    │  ├─ desk
+    │  └─ window
+    └─ results
+       ├─ desk                  
+       │  ├─ Debevec                  
+       │  └─ Robertson                 
+       └─ window                        
+          ├─ Debevec                       
+          └─ Robertson  
+```
 
 ### Run Code
 ```python=
