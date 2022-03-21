@@ -12,18 +12,18 @@
 ### Directory Structure 
 ``` 
 hw1_[13]
- ├─ code  
- └─ data
-    ├─ images        
-    │  ├─ desk
-    │  └─ window
-    └─ results
-       ├─ desk                  
-       │  ├─ Debevec                  
-       │  └─ Robertson                 
-       └─ window                        
-          ├─ Debevec                       
-          └─ Robertson  
+├─ code  
+└─ data
+   ├─ images        
+   │  ├─ desk
+   │  └─ window
+   └─ results
+      ├─ desk                  
+      │  ├─ Debevec                  
+      │  └─ Robertson                 
+      └─ window                        
+         ├─ Debevec                       
+         └─ Robertson  
 ```
 
 ### Run Code
